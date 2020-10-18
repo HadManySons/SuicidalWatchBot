@@ -109,7 +109,12 @@ while True:
                 for i in reddit.redditor(rAirForceSubmissions.author.name).submissions.new():
                     if "suicidewatch" in i.permalink.lower():
                         reddit.subreddit(rAirForceSubmissions.subreddit.display_name).message("Suicide Watch Hit", f"This person: /u/{rAirForceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
-                        print("match")
+                        logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
+                                     f"Match: /u/{rAirForceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
+                        if rAirForceSubmissions.subreddit.display_name.lower() == "airforce":
+                            reddit.redditor("412TW_CCC").message("Suicide Watch Hit", f"This person: /u/{rAirForceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
+                dbsubmissionRecord.execute('INSERT INTO submissions VALUES (?);', (rAirForceSubmissions.id,))
+                conn.commit()
 
     # what to do if Ctrl-C is pressed while script is running
     except KeyboardInterrupt:
