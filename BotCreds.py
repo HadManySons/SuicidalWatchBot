@@ -1,0 +1,5 @@
+credsUserAgent = "A bot to correlate suicidal posts with posts in /r/SuicideWatch"
+credsClientID = ""
+credsClientSecret = ""
+credsUserName = "SuicidalWatchBot"
+credsPassword = ""
