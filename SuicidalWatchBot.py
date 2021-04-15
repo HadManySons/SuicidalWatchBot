@@ -50,6 +50,8 @@ while NotLoggedIn:
 globalCount = 0
 dbFile = Path("SuicidalSubmissionRecord.db")
 
+
+
 # check to see if database file exists
 if dbFile.is_file():
     # connection to database file
@@ -64,7 +66,7 @@ else:  # if it doesn't, create it
 # subreddit instance of /r/AirForce. 'SuicidalWatchBot' must be changed to 'airforce' for a production version of the
 # script.
 subreddit = 'airforce+USMC+airnationalguard'
-rAirForce = reddit.subreddit(subreddit)
+rInstance = reddit.subreddit(subreddit)
 
 logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
              "Starting processing loop for subreddit: " + subreddit)
@@ -72,27 +74,26 @@ logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
 while True:
     try:
         # stream all submissions from /r/AirForce
-        for rAirForceSubmissions in rAirForce.stream.submissions():
+        for InstanceSubmissions in rInstance.stream.submissions():
             globalCount += 1
 
             # If the post is older than about 5 months, ignore it and move on.
-            if (time.time() - rAirForceSubmissions.created) > 13148715:
-                print("Post too old, continuing")
+            if (time.time() - InstanceSubmissions.created) > 13148715:
+                print("Post too old, continuing\n")
                 continue
 
-            print("\nsubmissions processed since start of script: " + str(globalCount))
-            print("Processing submission: " + rAirForceSubmissions.id)
+            print("Processing submission #" + str(globalCount) + ": " + InstanceSubmissions.id + "\n")
 
             # prints a link to the submission.
             permlink = "http://www.reddit.com" + \
-                       rAirForceSubmissions.permalink
+                       InstanceSubmissions.permalink
             print(permlink)
             logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
                          "Processing submission: " + permlink)
 
             # Pulls all submissions previously submissioned on
             dbsubmissionRecord.execute(
-                "SELECT * FROM submissions WHERE submission=?", (rAirForceSubmissions.id,))
+                "SELECT * FROM submissions WHERE submission=?", (InstanceSubmissions.id,))
 
             id_exists = dbsubmissionRecord.fetchone()
             print(id_exists)
@@ -100,21 +101,31 @@ while True:
             # itself
             if id_exists:
                 print("Already processed submission: " +
-                      str(rAirForceSubmissions.id) + ", skipping")
+                      str(InstanceSubmissions.id) + ", skipping")
                 continue
-            elif rAirForceSubmissions.author == "SuicidalWatchBot":
+            elif InstanceSubmissions.author == "SuicidalWatchBot":
                 print("Author was the bot, skipping...")
                 continue
             else:
-                for i in reddit.redditor(rAirForceSubmissions.author.name).submissions.new():
+                for i in reddit.redditor(InstanceSubmissions.author.name).submissions.new():
                     if "suicidewatch" in i.permalink.lower():
-                        reddit.subreddit(rAirForceSubmissions.subreddit.display_name).message("Suicide Watch Hit", f"This person: /u/{rAirForceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
+                        reddit.redditor("HadManySons").message("Suicide Watch Hit",
+                                    f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
                         logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
-                                     f"Match: /u/{rAirForceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
-                        if rAirForceSubmissions.subreddit.display_name.lower() == "airforce":
-                            reddit.redditor("412TW_CCC").message("Suicide Watch Hit", f"This person: /u/{rAirForceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
-                dbsubmissionRecord.execute('INSERT INTO submissions VALUES (?);', (rAirForceSubmissions.id,))
+                                     f"Match: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
+                dbsubmissionRecord.execute('INSERT INTO submissions VALUES (?);', (InstanceSubmissions.id,))
                 conn.commit()
+                '''
+            else:
+                for i in reddit.redditor(InstanceSubmissions.author.name).submissions.new():
+                    if "suicidewatch" in i.permalink.lower():
+                        reddit.subreddit(InstanceSubmissions.subreddit.display_name).message("Suicide Watch Hit", f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
+                        logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
+                                     f"Match: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
+                        if InstanceSubmissions.subreddit.display_name.lower() == "airforce":
+                            reddit.redditor("412TW_CCC").message("Suicide Watch Hit", f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
+                dbsubmissionRecord.execute('INSERT INTO submissions VALUES (?);', (InstanceSubmissions.id,))
+                conn.commit()'''
 
     # what to do if Ctrl-C is pressed while script is running
     except KeyboardInterrupt:
