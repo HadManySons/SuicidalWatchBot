@@ -96,7 +96,6 @@ while True:
                 "SELECT * FROM submissions WHERE submission=?", (InstanceSubmissions.id,))
 
             id_exists = dbsubmissionRecord.fetchone()
-            print(id_exists)
             # Make sure we don't reply to the same submission twice or to the bot
             # itself
             if id_exists:
@@ -109,23 +108,13 @@ while True:
             else:
                 for i in reddit.redditor(InstanceSubmissions.author.name).submissions.new():
                     if "suicidewatch" in i.permalink.lower():
-                        reddit.redditor("HadManySons").message("Suicide Watch Hit",
-                                    f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
+                        reddit.subreddit(InstanceSubmissions.subreddit.display_name).message("Suicide Watch Hit", f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com{i.permalink}")
                         logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
-                                     f"Match: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
+                                     f"Match: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com{i.permalink}")
+                        if InstanceSubmissions.subreddit.display_name.lower() == "airforce":
+                            reddit.redditor("412TW_CCC").message("Suicide Watch Hit", f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com{i.permalink}")
                 dbsubmissionRecord.execute('INSERT INTO submissions VALUES (?);', (InstanceSubmissions.id,))
                 conn.commit()
-                '''
-            else:
-                for i in reddit.redditor(InstanceSubmissions.author.name).submissions.new():
-                    if "suicidewatch" in i.permalink.lower():
-                        reddit.subreddit(InstanceSubmissions.subreddit.display_name).message("Suicide Watch Hit", f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
-                        logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
-                                     f"Match: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
-                        if InstanceSubmissions.subreddit.display_name.lower() == "airforce":
-                            reddit.redditor("412TW_CCC").message("Suicide Watch Hit", f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com/{i.permalink}")
-                dbsubmissionRecord.execute('INSERT INTO submissions VALUES (?);', (InstanceSubmissions.id,))
-                conn.commit()'''
 
     # what to do if Ctrl-C is pressed while script is running
     except KeyboardInterrupt:
