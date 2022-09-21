@@ -92,16 +92,19 @@ while True:
             elif InstanceSubmissions.author == "SuicidalWatchBot":
                 print("Author was the bot, skipping...")
                 continue
-            else:
-                for i in reddit.redditor(InstanceSubmissions.author.name).submissions.new():
-                    if "suicidewatch" in i.permalink.lower():
-                        reddit.subreddit(InstanceSubmissions.subreddit.display_name).message("Suicide Watch Hit", f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com{i.permalink}")
-                        logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
-                                     f"Match: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com{i.permalink}")
-                        if InstanceSubmissions.subreddit.display_name.lower() == "airforce":
-                            reddit.redditor("412TW_CCC").message("Suicide Watch Hit", f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com{i.permalink}")
-                dbsubmissionRecord.execute('INSERT INTO submissions VALUES (?);', (InstanceSubmissions.id,))
-                conn.commit()
+            else:   
+                try:
+                    for i in reddit.redditor(InstanceSubmissions.author.name).submissions.new():
+                        if "suicidewatch" in i.permalink.lower():
+                            reddit.subreddit(InstanceSubmissions.subreddit.display_name).message("Suicide Watch Hit">
+                            logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
+                                     f"Match: /u/{InstanceSubmissions.author.name} has recently posted in /r/Suicide>
+                            if InstanceSubmissions.subreddit.display_name.lower() == "airforce" or "spaceforce":
+                                reddit.redditor("412TW_CCC").message("Suicide Watch Hit", f"This person: /u/{Instanc>
+                    dbsubmissionRecord.execute('INSERT INTO submissions VALUES (?);', (InstanceSubmissions.id,))
+                    conn.commit()
+                except Exception as err:
+                    pass
 
     # what to do if Ctrl-C is pressed while script is running
     except KeyboardInterrupt:
