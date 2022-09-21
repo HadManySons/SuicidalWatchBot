@@ -96,11 +96,11 @@ while True:
                 try:
                     for i in reddit.redditor(InstanceSubmissions.author.name).submissions.new():
                         if "suicidewatch" in i.permalink.lower():
-                            reddit.subreddit(InstanceSubmissions.subreddit.display_name).message("Suicide Watch Hit">
+                            reddit.subreddit(InstanceSubmissions.subreddit.display_name).message("Suicide Watch Hit", f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com{i.permalink}")
                             logging.info(time.strftime("%Y/%m/%d %H:%M:%S ") +
-                                     f"Match: /u/{InstanceSubmissions.author.name} has recently posted in /r/Suicide>
+                                     f"Match: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com{i.permalink}")
                             if InstanceSubmissions.subreddit.display_name.lower() == "airforce" or "spaceforce":
-                                reddit.redditor("412TW_CCC").message("Suicide Watch Hit", f"This person: /u/{Instanc>
+                                reddit.redditor("412TW_CCC").message("Suicide Watch Hit", f"This person: /u/{InstanceSubmissions.author.name} has recently posted in /r/SuicideWatch: http://www.reddit.com{i.permalink}")
                     dbsubmissionRecord.execute('INSERT INTO submissions VALUES (?);', (InstanceSubmissions.id,))
                     conn.commit()
                 except Exception as err:
